@@ -36,6 +36,7 @@
 	RegisterSignal(drifting_loop, COMSIG_MOVELOOP_PREPROCESS_CHECK, PROC_REF(before_move))
 	RegisterSignal(drifting_loop, COMSIG_MOVELOOP_POSTPROCESS, PROC_REF(after_move))
 	RegisterSignal(drifting_loop, COMSIG_QDELETING, PROC_REF(loop_death))
+	RegisterSignal(parent, COMSIG_MOB_ATTEMPT_HALT_SPACEMOVE, PROC_REF(attempt_halt))
 	if(drifting_loop.status & MOVELOOP_STATUS_RUNNING)
 		drifting_start(drifting_loop) // There's a good chance it'll autostart, gotta catch that
 
@@ -207,28 +208,28 @@
 	if(world.time < block_inputs_until)
 		return COMSIG_MOB_CLIENT_BLOCK_PRE_MOVE
 
-/datum/drift_handler/proc/attempt_halt(movement_dir, continuous_move, atom/backup)
-	if ((backup.density || !backup.CanPass(parent, get_dir(backup, parent))) && (get_dir(parent, backup) == movement_dir || parent.loc == backup.loc))
+/datum/drift_handler/proc/attempt_halt(mob/source, movement_dir, continuous_move, atom/backup)
+	SIGNAL_HANDLER
+
+	if ((backup.density || !backup.CanPass(source, get_dir(backup, source))) && (get_dir(source, backup) == movement_dir || source.loc == backup.loc))
 		if (drift_force >= INERTIA_FORCE_THROW_FLOOR)
-			parent.throw_at(backup, 1, floor(1 + (drift_force - INERTIA_FORCE_THROW_FLOOR) / INERTIA_FORCE_PER_THROW_FORCE), spin = FALSE)
-		return FALSE
+			source.throw_at(backup, 1, floor(1 + (drift_force - INERTIA_FORCE_THROW_FLOOR) / INERTIA_FORCE_PER_THROW_FORCE), spin = FALSE)
+		return
 
 	if (drift_force < INERTIA_FORCE_SPACEMOVE_GRAB || isnull(drifting_loop))
-		return FALSE
+		return
 
-	if (ismob(parent))
-		var/mob/source_user = parent
-		if (!isnull(source_user.client) && source_user.client.intended_direction)
-			if ((source_user.client.intended_direction & movement_dir) && !(get_dir(source_user, backup) & movement_dir))
-				return FALSE
+	if (!isnull(source.client) && source.client.intended_direction)
+		if ((source.client.intended_direction & movement_dir) && !(get_dir(source, backup) & movement_dir))
+			return
 
-	if (drift_force <= INERTIA_FORCE_SPACEMOVE_REDUCTION / parent.inertia_force_weight)
-		glide_to_halt(get_loop_delay(parent))
-		return TRUE
+	if (drift_force <= INERTIA_FORCE_SPACEMOVE_REDUCTION / source.inertia_force_weight)
+		glide_to_halt(get_loop_delay(source))
+		return COMPONENT_PREVENT_SPACEMOVE_HALT
 
-	drift_force -= INERTIA_FORCE_SPACEMOVE_REDUCTION / parent.inertia_force_weight
-	drifting_loop.set_delay(get_loop_delay(parent))
-	return TRUE
+	drift_force -= INERTIA_FORCE_SPACEMOVE_REDUCTION / source.inertia_force_weight
+	drifting_loop.set_delay(get_loop_delay(source))
+	return COMPONENT_PREVENT_SPACEMOVE_HALT
 
 /datum/drift_handler/proc/get_loop_delay(atom/movable/movable)
 	return (DEFAULT_INERTIA_SPEED / ((1 - INERTIA_SPEED_COEF) + drift_force * INERTIA_SPEED_COEF)) * movable.inertia_move_multiplier
