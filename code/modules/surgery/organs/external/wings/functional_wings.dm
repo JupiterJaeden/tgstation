@@ -145,7 +145,7 @@
 	if (get_dir(source, backup) == movement_dir || source.loc == backup.loc)
 		return
 
-	if (!can_fly(source) || !source.client.intended_direction || (source.client.intended_direction & get_dir(source, backup)))
+	if (!can_fly(source) || !source.client.intended_direction)
 		return
 
 	return COMPONENT_PREVENT_SPACEMOVE_HALT
