@@ -110,7 +110,6 @@
 		human.AddElement(/datum/element/forced_gravity, 0)
 		passtable_on(human, SPECIES_FLIGHT_TRAIT)
 		RegisterSignal(human, COMSIG_MOB_CLIENT_MOVE_NOGRAV, PROC_REF(on_client_move))
-		RegisterSignal(human, COMSIG_MOB_ATTEMPT_HALT_SPACEMOVE, PROC_REF(on_pushoff))
 		START_PROCESSING(SSnewtonian_movement, src)
 		open_wings()
 		to_chat(human, span_notice("You beat your wings and begin to hover gently above the ground..."))
@@ -123,7 +122,7 @@
 	human.remove_movespeed_modifier(/datum/movespeed_modifier/jetpack/wings)
 	human.RemoveElement(/datum/element/forced_gravity, 0)
 	passtable_off(human, SPECIES_FLIGHT_TRAIT)
-	UnregisterSignal(human, list(COMSIG_MOB_CLIENT_MOVE_NOGRAV, COMSIG_MOB_ATTEMPT_HALT_SPACEMOVE))
+	UnregisterSignal(human, COMSIG_MOB_CLIENT_MOVE_NOGRAV)
 	STOP_PROCESSING(SSnewtonian_movement, src)
 	to_chat(human, span_notice("You settle gently back onto the ground..."))
 	close_wings()
@@ -138,17 +137,6 @@
 	var/max_drift_force = (DEFAULT_INERTIA_SPEED / source.cached_multiplicative_slowdown - 1) / INERTIA_SPEED_COEF + 1
 	source.newtonian_move(dir2angle(source.client.intended_direction), instant = TRUE, drift_force = FUNCTIONAL_WING_FORCE, controlled_cap = max_drift_force)
 	source.setDir(source.client.intended_direction)
-
-/obj/item/organ/wings/functional/proc/on_pushoff(mob/source, movement_dir, continuous_move, atom/backup)
-	SIGNAL_HANDLER
-
-	if (get_dir(source, backup) == movement_dir || source.loc == backup.loc)
-		return
-
-	if (!can_fly(source) || !source.client.intended_direction)
-		return
-
-	return COMPONENT_PREVENT_SPACEMOVE_HALT
 
 /obj/item/organ/wings/functional/process(seconds_per_tick)
 	if (!owner || !can_fly(owner) || isnull(owner.drift_handler))
