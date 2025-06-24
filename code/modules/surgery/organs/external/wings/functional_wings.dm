@@ -43,7 +43,6 @@
 		COMSIG_WINGS_CLOSED, \
 		null, \
 		CALLBACK(src, PROC_REF(can_fly)), \
-		CALLBACK(src, PROC_REF(can_fly)), \
 	)
 
 /obj/item/organ/wings/functional/Destroy()

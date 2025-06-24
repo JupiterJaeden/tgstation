@@ -31,7 +31,6 @@
 		COMSIG_ORGAN_REMOVED, \
 		null, \
 		CALLBACK(src, PROC_REF(allow_flight)), \
-		null, \
 	)
 
 /obj/item/organ/wings/moth/on_mob_insert(mob/living/carbon/receiver)
