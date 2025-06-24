@@ -1266,14 +1266,11 @@
 	if(!isturf(loc))
 		return TRUE
 
-	if (handle_spacemove_grabbing())
+	if(locate(/obj/structure/lattice) in range(1, get_turf(src))) //Not realistic but makes pushing things in space easier
 		return TRUE
 
 	return FALSE
 
-/atom/movable/proc/handle_spacemove_grabbing()
-	if(locate(/obj/structure/lattice) in range(1, get_turf(src))) //Not realistic but makes pushing things in space easier
-		return TRUE
 
 /// Only moves the object if it's under no gravity
 /// Accepts the direction to move, if the push should be instant, and an optional parameter to fine tune the start delay
