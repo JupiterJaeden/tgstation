@@ -103,8 +103,13 @@
 	required_slots = list(ITEM_SLOT_GLOVES)
 
 /obj/item/mod/module/tether/used()
+<<<<<<< HEAD
 	if(HAS_TRAIT_FROM(mod.wearer, TRAIT_TETHER_ATTACHED, REF(src)))
 		balloon_alert(mod.wearer, "already tethered!")
+=======
+	if(mod.wearer.has_gravity(get_turf(src)))
+		balloon_alert(mod.wearer, "too much gravity!")
+>>>>>>> parent of ad111f4950a (Spacemove refactor - Newtonian physics (#84869))
 		playsound(src, 'sound/items/weapons/gun/general/dry_fire.ogg', 25, TRUE)
 		return FALSE
 	return ..()
@@ -141,6 +146,7 @@
 	hitsound_wall = 'sound/items/weapons/batonextend.ogg'
 	suppressed = SUPPRESSED_VERY
 	hit_threshhold = ABOVE_NORMAL_TURF_LAYER
+<<<<<<< HEAD
 	embed_type = /datum/embedding/tether_projectile
 	shrapnel_type = /obj/item/tether_anchor
 	/// Reference to the beam following the projectile.
@@ -168,6 +174,10 @@
 	. = ..()
 	if (isopenturf(loc))
 		last_turf = loc
+=======
+	/// Reference to the beam following the projectile.
+	var/line
+>>>>>>> parent of ad111f4950a (Spacemove refactor - Newtonian physics (#84869))
 
 /obj/projectile/tether/fire(setAngle)
 	if(firer)
@@ -176,6 +186,7 @@
 
 /obj/projectile/tether/on_hit(atom/target, blocked = 0, pierce_hit)
 	. = ..()
+<<<<<<< HEAD
 	if (!firer)
 		return
 
@@ -212,11 +223,16 @@
 	anchor.anchored = TRUE
 	anchor.parent_module = parent_module
 	firer.AddComponent(/datum/component/tether, anchor, 7, "MODtether", parent_module = parent_module, tether_trait_source = REF(parent_module))
+=======
+	if(firer)
+		firer.throw_at(target, 10, 1, firer, FALSE, FALSE, null, MOVE_FORCE_NORMAL, TRUE)
+>>>>>>> parent of ad111f4950a (Spacemove refactor - Newtonian physics (#84869))
 
 /obj/projectile/tether/Destroy()
 	QDEL_NULL(line)
 	return ..()
 
+<<<<<<< HEAD
 /obj/item/tether_anchor
 	name = "tether anchor"
 	desc = "A reinforced anchor with a tether attachment point. A centuries old EVA tool which saved countless engineers' lives."
@@ -318,6 +334,8 @@
 	jostle_pain_mult = 2
 	rip_time = 1 SECONDS
 
+=======
+>>>>>>> parent of ad111f4950a (Spacemove refactor - Newtonian physics (#84869))
 ///Radiation Protection - Protects the user from radiation, gives them a geiger counter and rad info in the panel.
 /obj/item/mod/module/rad_protection
 	name = "MOD radiation protection module"

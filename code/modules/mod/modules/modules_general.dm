@@ -113,10 +113,6 @@
 	var/stabilize = TRUE
 	/// Callback to see if we can thrust the user.
 	var/thrust_callback
-	/// How much force this module can apply per tick
-	var/drift_force = 1.5 NEWTONS
-	/// How much force this module's stabilizier can put out
-	var/stabilizer_force = 1.2 NEWTONS
 
 /obj/item/mod/module/jetpack/Initialize(mapload)
 	. = ..()
@@ -139,21 +135,22 @@
 	AddComponent( \
 		/datum/component/jetpack, \
 		src.stabilize, \
-		drift_force, \
-		stabilizer_force, \
 		COMSIG_MODULE_TRIGGERED, \
 		COMSIG_MODULE_DEACTIVATED, \
 		MOD_ABORT_USE, \
 		thrust_callback, \
-		/datum/effect_system/trail_follow/ion/grav_allowed, \
+		/datum/effect_system/trail_follow/ion/grav_allowed \
 	)
 
+<<<<<<< HEAD
 	if (!isnull(mod) && !isnull(mod.wearer) && mod.wearer.get_item_by_slot(slot_flags) == src)
 		if (!stabilize)
 			ADD_TRAIT(mod.wearer, TRAIT_NOGRAV_ALWAYS_DRIFT, REF(src))
 		else
 			REMOVE_TRAIT(mod.wearer, TRAIT_NOGRAV_ALWAYS_DRIFT, REF(src))
 
+=======
+>>>>>>> parent of ad111f4950a (Spacemove refactor - Newtonian physics (#84869))
 /obj/item/mod/module/jetpack/get_configuration()
 	. = ..()
 	.["stabilizers"] = add_ui_configuration("Stabilizers", "bool", stabilize)
@@ -170,6 +167,7 @@
 		return FALSE
 	return TRUE
 
+<<<<<<< HEAD
 /obj/item/mod/module/jetpack/on_activation()
 	mod.wearer.add_movespeed_modifier(/datum/movespeed_modifier/jetpack/full_speed)
 	if (!stabilize)
@@ -189,6 +187,8 @@
 	drift_force = 2 NEWTONS
 	stabilizer_force = 2 NEWTONS
 
+=======
+>>>>>>> parent of ad111f4950a (Spacemove refactor - Newtonian physics (#84869))
 /// Cooldown to use if we didn't actually launch a jump jet
 #define FAILED_ACTIVATION_COOLDOWN 3 SECONDS
 

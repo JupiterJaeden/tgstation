@@ -1,5 +1,3 @@
-#define MOTH_WING_FORCE 1 NEWTONS
-
 ///Moth wings! They can flutter in low-grav and burn off in heat
 /obj/item/organ/wings/moth
 	name = "moth wings"
@@ -21,13 +19,12 @@
 	. = ..()
 	RegisterSignal(receiver, COMSIG_HUMAN_BURNING, PROC_REF(try_burn_wings))
 	RegisterSignal(receiver, COMSIG_LIVING_POST_FULLY_HEAL, PROC_REF(heal_wings))
-	RegisterSignal(receiver, COMSIG_MOB_CLIENT_MOVE_NOGRAV, PROC_REF(on_client_move))
-	START_PROCESSING(SSnewtonian_movement, src)
+	RegisterSignal(receiver, COMSIG_MOVABLE_PRE_MOVE, PROC_REF(update_float_move))
 
 /obj/item/organ/wings/moth/on_mob_remove(mob/living/carbon/organ_owner)
 	. = ..()
-	UnregisterSignal(organ_owner, list(COMSIG_HUMAN_BURNING, COMSIG_LIVING_POST_FULLY_HEAL, COMSIG_MOB_CLIENT_MOVE_NOGRAV))
-	STOP_PROCESSING(SSnewtonian_movement, src)
+	UnregisterSignal(organ_owner, list(COMSIG_HUMAN_BURNING, COMSIG_LIVING_POST_FULLY_HEAL, COMSIG_MOVABLE_PRE_MOVE))
+	REMOVE_TRAIT(organ_owner, TRAIT_FREE_FLOAT_MOVEMENT, REF(src))
 
 /obj/item/organ/wings/moth/make_flap_sound(mob/living/carbon/wing_owner)
 	playsound(wing_owner, 'sound/mobs/humanoids/moth/moth_flutter.ogg', 50, TRUE)
@@ -35,6 +32,7 @@
 /obj/item/organ/wings/moth/can_soften_fall()
 	return !burnt
 
+<<<<<<< HEAD
 /obj/item/organ/wings/moth/proc/allow_flight()
 	if(!owner || !owner.client)
 		return FALSE
@@ -48,10 +46,27 @@
 		return FALSE
 	if(owner.has_gravity())
 		return FALSE
+=======
+///Check if we can flutter around
+/obj/item/organ/external/wings/moth/proc/update_float_move()
+	SIGNAL_HANDLER
+
+	if(can_fly())
+		var/datum/gas_mixture/current = owner.loc.return_air()
+		if(current && (current.return_pressure() >= ONE_ATMOSPHERE*0.85)) //as long as there's reasonable pressure and no gravity, flight is possible
+			ADD_TRAIT(owner, TRAIT_FREE_FLOAT_MOVEMENT, REF(src))
+			return
+
+	REMOVE_TRAIT(owner, TRAIT_FREE_FLOAT_MOVEMENT, REF(src))
+
+///Checks if our wings are usable
+/obj/item/organ/external/wings/moth/proc/can_fly()
+>>>>>>> parent of ad111f4950a (Spacemove refactor - Newtonian physics (#84869))
 	if(ishuman(owner))
 		var/mob/living/carbon/human/human_owner = owner
 		if(human_owner.wear_suit?.flags_inv & HIDEMUTWINGS)
 			return FALSE //Can't fly with hidden wings
+<<<<<<< HEAD
 	if(burnt)
 		return FALSE
 	var/datum/gas_mixture/current = owner.loc.return_air()
@@ -75,6 +90,11 @@
 	var/max_drift_force = (DEFAULT_INERTIA_SPEED / source.cached_multiplicative_slowdown - 1) / INERTIA_SPEED_COEF + 1
 	source.newtonian_move(dir2angle(source.client.intended_direction), instant = TRUE, drift_force = MOTH_WING_FORCE, controlled_cap = max_drift_force)
 	source.setDir(source.client.intended_direction)
+=======
+	if(isspaceturf(owner.loc) || burnt)
+		return FALSE //No flight in space/burnt wings
+	return TRUE
+>>>>>>> parent of ad111f4950a (Spacemove refactor - Newtonian physics (#84869))
 
 ///check if our wings can burn off ;_;
 /obj/item/organ/wings/moth/proc/try_burn_wings(mob/living/carbon/human/human)
@@ -137,5 +157,3 @@
 
 /datum/bodypart_overlay/mutant/wings/moth/get_base_icon_state()
 	return burnt ? burn_datum.icon_state : sprite_datum.icon_state
-
-#undef MOTH_WING_FORCE

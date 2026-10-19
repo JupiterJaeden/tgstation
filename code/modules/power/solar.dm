@@ -183,7 +183,11 @@
 
 	// actually flip to other direction?
 	if(abs(angle - azimuth_current) > 180)
+<<<<<<< HEAD
 		mid_azimuth = REVERSE_ANGLE(mid_azimuth)
+=======
+		mid_azimuth = (mid_azimuth + 180) % 360
+>>>>>>> parent of ad111f4950a (Spacemove refactor - Newtonian physics (#84869))
 
 	// Split into 2 parts so it doesn't distort on large changes
 	animate(part,
